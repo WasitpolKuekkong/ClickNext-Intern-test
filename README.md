@@ -16,15 +16,23 @@
 - ✅ เก็บข้อมูลใน LocalStorage
 
 
-
-เริ่ม
+### วิธีเข้า
+- เริ่มสร้างไฟล์
+- กดเข้าไฟล์ที่สร้าง
+- พิม ``cmd`` ในแถบค้นหา
 
 ```bash
+git clone https://github.com/WasitpolKuekkong/ClickNext-Intern-test.git
+```
+เมื่อติดตั้งเสร็จ
+
+```bash
+cd ClickNext-Intern-test
 npm i
+
 ```
 
 รัน
-
 
 ```bash
 npm run dev
