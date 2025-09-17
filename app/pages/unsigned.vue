@@ -1,6 +1,7 @@
 <template>
     <div class="bg">
-        <img src="/img/bg/cat-eating-chips-windows-xp-meme.gif" alt="background" class="bg-img" />
+        <div alt="background" class="bg-img" >
+            </div>
 
         <div class="form-container">
             <main class="auth">
@@ -21,7 +22,7 @@
                 <!-- One form, switches based on 'lognreg' -->
                 <form @submit.prevent="go">
                     <template v-if="!lognreg">
-                        <!-- show name field only in register mode -->
+                        
                         <input class="input" v-model="name" placeholder="Name (optional)">
                     </template>
 
@@ -58,7 +59,7 @@ const password = ref('')
 const err = ref('')
 
 const { login, register, hydrate } = useAuth()
-definePageMeta({ layout: 'unsignin' })
+
 
 onMounted(() => hydrate())
 
@@ -196,6 +197,7 @@ button span:not(active) {
     height: 100%;
     object-fit: cover;
     z-index: -1;
+    background-color: black;
 }
 
 .form-container {

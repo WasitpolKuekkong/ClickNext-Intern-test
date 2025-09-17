@@ -1,19 +1,25 @@
 <template>
   <header class="kb-navbar">
-    <!-- Left -->
+
     <div class="kb-left">
       <h1 class="kb-title">{{ title }}</h1>
     </div>
 
-    <!-- Center: Title + Add Board -->
     <div class="kb-center">
 
-      <button class="kb-add" type="button" aria-label="Add board" @click="emit('add-board')" title="Add board">
+      <button v-if="isMain" class="kb-add" type="button" aria-label="Add board" title="Add board" @click="onAddClick"
+        :disabled="!isAuthed">
         <span>+</span>
+      </button>
+
+
+      <button v-else class="kb-add" type="button" aria-label="Back to boards" title="Back" @click="goMain">
+        <span>&lt;</span>
       </button>
     </div>
 
-    <!-- Right: Login / Logout -->
+
+
     <div class="kb-right">
       <button v-if="isAuthed" class="kb-auth-btn" type="button" @click="handleLogout">
         Logout
@@ -28,12 +34,11 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useRouter } from '#app'
-import { useAuth } from '~/composables/useAuth' // ← ใช้ auth composable
-
-const props = withDefaults(defineProps<{
-  title?: string
-}>(), {
-  title: 'KanbanBoard',
+import { useAuth } from '~/composables/useAuth'
+const isMain = computed(() => props.mainpage)
+const props = defineProps({
+  title: { type: String, default: 'KanbanBoard' },
+  mainpage: { type: Boolean, default: false }, 
 })
 
 const emit = defineEmits<{
@@ -44,24 +49,44 @@ const router = useRouter()
 const { current, hydrate, logout } = useAuth()
 
 onMounted(() => {
-
-  hydrate()
+  hydrate() // sync จาก localStorage -> current
 })
-
 
 const isAuthed = computed(() => !!current.value)
 
 const handleLogout = () => {
-  logout()            
+  logout()
   router.push('/unsigned')
+}
+
+const goMain = () => {
+  router.push('/')
 }
 
 const goLogin = () => {
   router.push('/unsigned')
 }
+
+
+const onAddClick = () => {
+  if (!isAuthed.value) {
+    router.push('/unsigned')
+    return
+  }
+  emit('add-board')
+}
 </script>
 
 <style scoped>
+.kb-add[disabled] {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.kb-add[disabled] span {
+  box-shadow: none;
+}
+
 :root {
   --kb-bg: #ffffff;
   --kb-border: #e6e8eb;
@@ -74,7 +99,7 @@ const goLogin = () => {
 
 .kb-navbar {
   position: sticky;
-  top: 0;
+  top: 16px;
   z-index: 50;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -87,9 +112,11 @@ const goLogin = () => {
   box-shadow: var(--kb-shadow);
   outline: black 2px solid;
   border-radius: 10px;
+  background-color: rgb(255, 255, 255 , 0.6);
+  backdrop-filter: blur(5px);
 }
 
-/* Left / Right regions */
+
 .kb-left {
   display: flex;
   align-items: center;
@@ -104,7 +131,7 @@ const goLogin = () => {
   min-width: 0;
 }
 
-/* Center cluster */
+
 .kb-center {
   display: inline-flex;
   align-items: center;
@@ -119,7 +146,7 @@ const goLogin = () => {
   letter-spacing: 0.2px;
 }
 
-/* Add (+) button */
+
 .kb-add {
   display: flex;
   justify-content: center;
@@ -166,7 +193,7 @@ const goLogin = () => {
   transform: translateY(1px);
 }
 
-/* Login/Logout button */
+
 .kb-auth-btn {
   height: 36px;
   padding: 0 14px;
@@ -188,7 +215,7 @@ const goLogin = () => {
   transform: translateY(1px);
 }
 
-/* Responsive tweaks */
+
 @media (max-width: 640px) {
   .kb-navbar {
     height: 56px;

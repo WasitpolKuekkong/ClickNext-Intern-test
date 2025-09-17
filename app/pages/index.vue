@@ -1,10 +1,10 @@
 <template>
     <div class="wrap">
-        <AppNavbar title="KanbanBoard" @add-board="openAdd" />
+        <AppNavbar title="KanbanBoard" @add-board="openAdd" :mainpage="true" />
         <span class="welcomer">ยินดีต้อนรับกลับ {{ current?.name }}</span>
 
         <MyModal :showModal="show" title="สร้างบอร์ดใหม่" modalPlaceholder="ชื่่อบอร์ด" @close="show = false"
-            @submit="createBoard" />
+            @submit="createBoard" :mainpage="true" />
 
         <section class="list">
             <h2>Boards</h2>
@@ -66,7 +66,8 @@ const createBoard = (name: string) => {
 const confirmDelete = (id: string, name: string) => {
     if (!current.value) return navigateTo('/unsigned')
     deleteBoard(id)
-        saveBoards()}
+    saveBoards()
+}
 
 
 // ----- Drag & Drop -----
@@ -87,38 +88,38 @@ const onDragOver = (index: number, e: DragEvent) => {
 }
 
 const onDrop = (index: number, e: DragEvent) => {
-  e.preventDefault()
-  const from = dragIndex.value
-  const to   = index
+    e.preventDefault()
+    const from = dragIndex.value
+    const to = index
 
-  if (from === null || from === to) {
+    if (from === null || from === to) {
+        resetDnD()
+        return
+    }
+
+    // สำเนาอาร์เรย์แบบ type-safe
+    const list = [...boards.value]
+    if (from < 0 || from >= list.length || to < 0 || to >= list.length) {
+        resetDnD()
+        return
+    }
+
+    // เก็บ item ก่อน แล้วค่อยลบ/แทรก (กัน undefined)
+    const item = list[from]
+    if (!item) { resetDnD(); return }
+
+    // ลบตำแหน่งเดิม
+    list.splice(from, 1)
+
+    // ถ้าลากจากซ้ายไปขวา index ปลายทางจะขยับซ้ายลง 1
+    const target = from < to ? to - 1 : to
+
+    // แทรกที่ตำแหน่งใหม่
+    list.splice(target, 0, item)
+
+    boards.value = list
+    saveBoards()
     resetDnD()
-    return
-  }
-
-  // สำเนาอาร์เรย์แบบ type-safe
-  const list = [...boards.value]
-  if (from < 0 || from >= list.length || to < 0 || to >= list.length) {
-    resetDnD()
-    return
-  }
-
-  // เก็บ item ก่อน แล้วค่อยลบ/แทรก (กัน undefined)
-  const item = list[from]
-  if (!item) { resetDnD(); return }
-
-  // ลบตำแหน่งเดิม
-  list.splice(from, 1)
-
-  // ถ้าลากจากซ้ายไปขวา index ปลายทางจะขยับซ้ายลง 1
-  const target = from < to ? to - 1 : to
-
-  // แทรกที่ตำแหน่งใหม่
-  list.splice(target, 0, item)
-
-  boards.value = list
-  saveBoards()
-  resetDnD()
 }
 
 const resetDnD = () => {
@@ -128,6 +129,12 @@ const resetDnD = () => {
 </script>
 
 <style scoped>
+.list {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+}
+
 .wrap {
     padding: 16px;
 }
