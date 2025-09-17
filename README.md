@@ -30,5 +30,6 @@ npm i
 npm run dev
 
 ```
+เปิด
 
 [เข้าหน้าเว็บ](http://localhost:3000/)
