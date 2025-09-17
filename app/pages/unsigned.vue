@@ -7,11 +7,11 @@
                 <!-- Toggle header -->
                 <div class="toggle-log-regis" @click="lognreg = !lognreg">
                     <div v-if="lognreg" class="lognreg-header">
-                        <h1>L O G I N</h1>
+                        <h1>LOGIN</h1>
                         <p>Click here to change to register</p>
                     </div>
                     <div v-else class="lognreg-header">
-                        <h1>R E G I S T E R</h1>
+                        <h1>REGISTER</h1>
                         <p>Click here to change to login</p>
                     </div>
                 </div>
@@ -58,7 +58,7 @@ const password = ref('')
 const err = ref('')
 
 const { login, register, hydrate } = useAuth()
-definePageMeta({ layout: 'flatpage' })
+definePageMeta({ layout: 'unsignin' })
 
 onMounted(() => hydrate())
 
