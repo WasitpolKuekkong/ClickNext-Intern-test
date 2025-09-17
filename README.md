@@ -1,10 +1,10 @@
-### Tech stack
+## Tech stack
 - Nuxt 4.1.2
 - Typescript
 - CSS
 
 
-### Todo
+## Todo
 - ✅ Register / Login
 - ✅ สร้าง / ลบ / เปลี่ยนชื่อ Board
 - ❌ invite คนอื่นให้ทำงานร่วมกันได้
@@ -16,7 +16,7 @@
 - ✅ เก็บข้อมูลใน LocalStorage
 
 
-### วิธีติดั้ง
+## วิธีติดั้ง
 - เริ่มสร้างไฟล์
 - กดเข้าไฟล์ที่สร้าง
 - พิม ``cmd`` ในแถบค้นหา
@@ -31,7 +31,7 @@ cd ClickNext-Intern-test
 npm i
 
 ```
-### วิธีรัน
+## วิธีรัน
 - พิม ``cmd`` ในแถบค้นหาของFolder ``ClickNext-Intern-test``
 
 ```bash
