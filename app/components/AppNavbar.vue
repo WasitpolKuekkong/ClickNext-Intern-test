@@ -1,38 +1,24 @@
 <template>
   <header class="kb-navbar">
     <!-- Left -->
-    <div class="kb-left"></div>
+    <div class="kb-left">
+      <h1 class="kb-title">{{ title }}</h1>
+    </div>
 
     <!-- Center: Title + Add Board -->
     <div class="kb-center">
-      <h1 class="kb-title">{{ title }}</h1>
-      <button
-        class="kb-add"
-        type="button"
-        aria-label="Add board"
-        @click="emit('add-board')"
-        title="Add board"
-      >
-        +
+
+      <button class="kb-add" type="button" aria-label="Add board" @click="emit('add-board')" title="Add board">
+        <span>+</span>
       </button>
     </div>
 
     <!-- Right: Login / Logout -->
     <div class="kb-right">
-      <button
-        v-if="isAuthed"
-        class="kb-auth-btn"
-        type="button"
-        @click="handleLogout"
-      >
+      <button v-if="isAuthed" class="kb-auth-btn" type="button" @click="handleLogout">
         Logout
       </button>
-      <button
-        v-else
-        class="kb-auth-btn"
-        type="button"
-        @click="goLogin"
-      >
+      <button v-else class="kb-auth-btn" type="button" @click="goLogin">
         Login
       </button>
     </div>
@@ -40,15 +26,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from '#app'
+import { useAuth } from '~/composables/useAuth' // ← ใช้ auth composable
 
 const props = withDefaults(defineProps<{
   title?: string
-  tokenKey?: string
 }>(), {
   title: 'KanbanBoard',
-  tokenKey: 'authToken',
 })
 
 const emit = defineEmits<{
@@ -56,38 +41,26 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const isAuthed = ref(false)
+const { current, hydrate, logout } = useAuth()
 
-const syncAuth = () => {
-  try {
-    isAuthed.value = !!localStorage.getItem(props.tokenKey)
-  } catch {
-    isAuthed.value = false
-  }
-}
+onMounted(() => {
 
-const onStorage = (e: StorageEvent) => {
-  if (e.key === props.tokenKey) syncAuth()
-}
+  hydrate()
+})
+
+
+const isAuthed = computed(() => !!current.value)
 
 const handleLogout = () => {
-  localStorage.removeItem(props.tokenKey)
-  syncAuth()
+  logout()            
   router.push('/unsigned')
 }
 
 const goLogin = () => {
   router.push('/unsigned')
 }
-
-onMounted(() => {
-  syncAuth()
-  window.addEventListener('storage', onStorage)
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('storage', onStorage)
-})
 </script>
+
 <style scoped>
 :root {
   --kb-bg: #ffffff;
@@ -96,7 +69,7 @@ onBeforeUnmount(() => {
   --kb-muted: #6b7280;
   --kb-accent: #2563eb;
   --kb-accent-hover: #1d4ed8;
-  --kb-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --kb-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .kb-navbar {
@@ -112,6 +85,8 @@ onBeforeUnmount(() => {
   background: var(--kb-bg);
   border-bottom: 1px solid var(--kb-border);
   box-shadow: var(--kb-shadow);
+  outline: black 2px solid;
+  border-radius: 10px;
 }
 
 /* Left / Right regions */
@@ -146,23 +121,47 @@ onBeforeUnmount(() => {
 
 /* Add (+) button */
 .kb-add {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: 1px solid var(--kb-border);
-  background: #f8fafc;
-  font-size: 20px;
-  line-height: 1;
+  padding: 0.1em 0.25em;
+  width: 5em;
+  height: 4.2em;
+  background-color: #fff;
+  border: 0.08em solid #000;
+  border-radius: 0.3em;
+  font-size: 12px;
   cursor: pointer;
-  transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+
 }
-.kb-add:hover {
+
+.kb-add span {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: 0.4em;
+  width: 12em;
+  height: 3.25em;
+  background-color: #fff;
+  border-radius: 0.2em;
+  font-size: 1.1em;
+  color: #000;
+  border: 0.08em solid #000;
+  box-shadow: 0 0.4em 0.1em 0.019em #000;
+}
+
+.kb-add span:active {
+  transition: all 0.3s;
+  transform: translate(0, 0.4em);
+  background-color: #c5c5c5;
+  box-shadow: 0 0 0 0 #fff;
+}
+
+.kb-add span:hover {
   background: #eef2f7;
-  border-color: #d0d7de;
+
 }
+
 .kb-add:active {
   transform: translateY(1px);
 }
@@ -179,10 +178,12 @@ onBeforeUnmount(() => {
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
 }
+
 .kb-auth-btn:hover {
   background: #eef2f7;
   border-color: #d0d7de;
 }
+
 .kb-auth-btn:active {
   transform: translateY(1px);
 }
@@ -194,14 +195,17 @@ onBeforeUnmount(() => {
     padding: 0 12px;
     grid-template-columns: 1fr auto 1fr;
   }
+
   .kb-title {
     font-size: 16px;
   }
+
   .kb-add {
     width: 32px;
     height: 32px;
     font-size: 18px;
   }
+
   .kb-auth-btn {
     height: 34px;
     padding: 0 12px;
