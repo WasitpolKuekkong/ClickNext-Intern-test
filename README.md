@@ -16,7 +16,7 @@
 - ✅ เก็บข้อมูลใน LocalStorage
 
 
-### วิธีเข้า
+### วิธีติดั้ง
 - เริ่มสร้างไฟล์
 - กดเข้าไฟล์ที่สร้าง
 - พิม ``cmd`` ในแถบค้นหา
@@ -31,8 +31,8 @@ cd ClickNext-Intern-test
 npm i
 
 ```
-
-รัน
+### วิธีรัน
+- พิม ``cmd`` ในแถบค้นหาของFolder ``ClickNext-Intern-test``
 
 ```bash
 npm run dev
